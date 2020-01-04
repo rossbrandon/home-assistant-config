@@ -1,0 +1,24 @@
+- id: '1578118250812'
+  name: Pi Status Warning
+  entities:
+    light.study_bookshelf_lamp:
+      brightness: 254
+      effect: none
+      effect_list:
+      - colorloop
+      - random
+      friendly_name: Study Bookshelf Lamp
+      hs_color:
+      - 12
+      - 100
+      max_mireds: 500
+      min_mireds: 153
+      rgb_color:
+      - 255
+      - 50
+      - 0
+      state: 'on'
+      supported_features: 63
+      xy_color:
+      - 0.685
+      - 0.312

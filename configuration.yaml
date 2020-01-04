@@ -1,0 +1,90 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Theme
+frontend:
+  themes: !include_dir_merge_named themes
+  
+# Nest Thermastat
+badnest:
+  issue_token: !secret nest_issue_token
+  cookie: !secret nest_cookie
+  region: us
+  
+climate:
+  - platform: badnest
+    scan_interval: 10
+
+# August Lock
+august:
+  login_method: email
+  username: !secret august_username
+  password: !secret august_password
+
+# Ring Doorbell
+ring:
+  username: !secret ring_username
+  password: !secret ring_password
+  
+camera:
+  - platform: ring
+  
+# Speedtest
+speedtestdotnet:
+  server_id: 5024
+  scan_interval:
+    minutes: 65
+  monitored_conditions:
+    - ping
+    - download
+    - upload
+fastdotcom:
+  scan_interval:
+    minutes: 60
+
+# Sensors
+sensor:
+  # System Monitor
+  - platform: systemmonitor
+    resources:
+    - type: last_boot
+    - type: disk_use_percent
+      arg: /
+    - type: memory_use_percent
+    - type: swap_use_percent
+    - type: load_1m
+    - type: load_5m
+    - type: load_15m
+    
+  # Command Line Sensors
+  - platform: command_line
+    name: CPU Temperature
+    command: "cat /sys/class/thermal/thermal_zone0/temp"
+    unit_of_measurement: "C"
+    value_template: "{{ value | multiply(0.001) | round(1) }}"
+    
+  # Ring Doorbell
+  - platform: ring
+    monitored_conditions: [
+        battery,
+        wifi_signal_category, 
+        wifi_signal_strength,
+        last_activity
+      ]
+      
+  # BadNest
+  - platform: badnest

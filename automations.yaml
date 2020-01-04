@@ -1,0 +1,89 @@
+- id: '1577603770683'
+  alias: Turn off Living Room lights at bedtime
+  description: ''
+  trigger:
+  - event: sunset
+    offset: +05:15:00
+    platform: sun
+  condition:
+  - condition: state
+    entity_id: device_tracker.rosstaphone
+    state: not_home
+  action:
+  - device_id: 0b6bb3b67d4e4af9b2db40dc2c98ba4d
+    domain: light
+    entity_id: light.corner_lamp
+    type: turn_off
+  - device_id: a88b6edcc3cb4ea8abd3b1eb6806ba8a
+    domain: light
+    entity_id: light.glass_lamp_in_kitchen
+    type: turn_off
+  - device_id: 5467c5da431642e49ea69a01feef1dc3
+    domain: light
+    entity_id: light.cabinet_strip
+    type: turn_off
+- id: '1578118457996'
+  alias: Pi Status Warning
+  description: ''
+  trigger:
+  - above: '75'
+    entity_id: sensor.disk_use_percent
+    platform: numeric_state
+  - above: '90'
+    below: '200'
+    entity_id: sensor.memory_use_percent
+    for: 00:01:00
+    platform: numeric_state
+  - above: '65'
+    below: '200'
+    entity_id: sensor.cpu_temperature
+    for: 00:01:00
+    platform: numeric_state
+  condition: []
+  action:
+  - scene: scene.pi_status_warning
+  - data:
+      message: Pi Status Warning!
+    service: notify.mobile_app_rosstaphone
+- id: '1578127928222'
+  alias: Ring Battery Warning
+  description: ''
+  trigger:
+  - below: '20'
+    entity_id: sensor.ring_front_door_battery
+    platform: numeric_state
+  condition: []
+  action:
+  - data:
+      message: Ring battery is low!
+    service: notify.mobile_app_rosstaphone
+- id: '1578128205516'
+  alias: Alert if Front Door is unlocked when I leave
+  description: ''
+  trigger:
+  - entity_id: device_tracker.rosstaphone
+    event: leave
+    platform: zone
+    zone: zone.home
+  condition:
+  - condition: state
+    entity_id: lock.front_door
+    state: unlocked
+  action:
+  - data:
+      message: The front door is unlocked!
+    service: notify.mobile_app_rosstaphone
+- id: '1578128547014'
+  alias: Alert if Front Door is unlocked at bedtime
+  description: ''
+  trigger:
+  - at: '22:00:00'
+    platform: time
+  condition:
+  - condition: state
+    entity_id: lock.front_door
+    state: locked
+  action:
+  - data:
+      message: The front door is unlocked!
+    service: notify.mobile_app_rosstaphone
