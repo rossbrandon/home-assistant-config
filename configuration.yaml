@@ -19,6 +19,12 @@ scene: !include scenes.yaml
 frontend:
   themes: !include_dir_merge_named themes
   
+# Darksky Weather
+weather:
+  - platform: darksky
+    api_key: !secret darksky_api_key
+    mode: daily
+  
 # Nest
 # Needs HACS to function: https://hacs.xyz/docs/installation/manual
 # Badnest install: https://github.com/USA-RedDragon/badnest
@@ -91,3 +97,37 @@ sensor:
       
   # BadNest
   - platform: badnest
+  
+  # Template sensors
+  - platform: template
+    sensors:
+      # Display relative time since last activity
+      ring_front_door_last_activity_relative:
+        friendly_name: "Front Door Last Activity"
+        value_template: >
+          {%- set entity_id = 'sensor.ring_front_door_last_activity' %}
+          {%- set domain, object_id = entity_id.split('.') %}
+          {%- set state_object = states[domain][object_id] %}
+          {%- if state_object is defined and state_object.attributes.created_at is defined %}
+            {%- set t = as_timestamp(state_object.attributes.created_at) %}
+            {%- set n = now().timestamp() %}
+            {%- set d = n-t %}
+            {%- set midnight_today = as_timestamp(strptime(now().date() | string, "%Y-%m-%d")) %}
+            {%- set midnight_yesterday = midnight_today - 86400 %}
+            {%- set midnight_week_ago = midnight_today - 604800 %}
+            {%- if d < 60 %}
+              Less then a min ago
+            {%- elif d < 3600 %}
+              {{ (d // 60) | int }} min ago
+            {%- elif d < n-midnight_today %}
+              Today at {{ t | timestamp_custom('%I:%M %p') }}
+            {%- elif d < n-midnight_yesterday %}
+              Yesterday at {{ t | timestamp_custom('%I:%M %p') }}
+            {%- elif d < n-midnight_week_ago %}
+              {{ t | timestamp_custom('%A at %I:%M %p') }}
+            {%- else %}
+              {{ t | timestamp_custom('%m/%d at %I:%M %p') }}
+            {%- endif %}
+          {% else %}
+            unknown
+          {% endif %}

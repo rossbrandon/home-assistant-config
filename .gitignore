@@ -7,6 +7,7 @@
 !.gitignore
 !*.md
 !themes
+!node-red
 
 # Ignore folders.
 .storage
@@ -21,5 +22,5 @@ known_devices.yaml
 .august.conf
 .ring_cache.pickle
 home-assistant.log
-home-assistant_v2.db
+home-assistant_v2.db*
 .HA_VERSION
