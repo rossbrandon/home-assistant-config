@@ -19,12 +19,15 @@ scene: !include scenes.yaml
 frontend:
   themes: !include_dir_merge_named themes
   
-# Nest Thermastat
+# Nest
+# Needs HACS to function: https://hacs.xyz/docs/installation/manual
+# Badnest install: https://github.com/USA-RedDragon/badnest
 badnest:
   issue_token: !secret nest_issue_token
   cookie: !secret nest_cookie
   region: us
-  
+
+# Nest Thermostat
 climate:
   - platform: badnest
     scan_interval: 10
