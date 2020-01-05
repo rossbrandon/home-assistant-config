@@ -99,11 +99,19 @@ sensor:
   - platform: badnest
   
   # Template sensors
+  - platform: time_date
+    display_options:
+      - time
+      - date
+      - date_time
+      - time_date
+      
   - platform: template
     sensors:
       # Display relative time since last activity
       ring_front_door_last_activity_relative:
         friendly_name: "Front Door Last Activity"
+        entity_id: sensor.time
         value_template: >
           {%- set entity_id = 'sensor.ring_front_door_last_activity' %}
           {%- set domain, object_id = entity_id.split('.') %}
