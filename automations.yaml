@@ -71,8 +71,10 @@
     state: unlocked
   action:
   - data:
-      message: The front door is unlocked!
+      message: The front door is unlocked! Attempting to lock...
     service: notify.mobile_app_rosstaphone
+  - entity_id: lock.front_door
+    service: lock.lock
 - id: '1578128547014'
   alias: Alert if Front Door is unlocked at bedtime
   description: ''
@@ -82,8 +84,42 @@
   condition:
   - condition: state
     entity_id: lock.front_door
-    state: locked
+    state: unlocked
   action:
   - data:
-      message: The front door is unlocked!
+      message: The front door is unlocked! Attempting to lock...
+    service: notify.mobile_app_rosstaphone
+  - entity_id: lock.front_door
+    service: lock.lock
+- id: '1578200529912'
+  alias: Alert if Porch light is off after sunset
+  description: ''
+  trigger:
+  - event: sunset
+    offset: +01:30:00
+    platform: sun
+  condition:
+  - condition: state
+    entity_id: light.porch
+    state: 'off'
+  action:
+  - data:
+      message: The porch light is off! Turning on...
+    service: notify.mobile_app_rosstaphone
+  - entity_id: light.porch
+    service: light.turn_on
+- id: '1578205569884'
+  alias: Alert if Porch light switch is off after sunset
+  description: ''
+  trigger:
+  - event: sunset
+    offset: +01:30:00
+    platform: sun
+  condition:
+  - condition: state
+    entity_id: light.porch
+    state: unavailable
+  action:
+  - data:
+      message: The porch light switch is off!
     service: notify.mobile_app_rosstaphone
