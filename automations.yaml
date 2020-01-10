@@ -29,15 +29,13 @@
   - above: '75'
     entity_id: sensor.disk_use_percent
     platform: numeric_state
-  - above: '90'
+  - above: '80'
     below: '200'
     entity_id: sensor.memory_use_percent
-    for: 00:01:00
     platform: numeric_state
   - above: '65'
     below: '200'
     entity_id: sensor.cpu_temperature
-    for: 00:01:00
     platform: numeric_state
   condition: []
   action:
@@ -122,4 +120,51 @@
   action:
   - data:
       message: The porch light switch is off!
+    service: notify.mobile_app_rosstaphone
+- id: '1578210817889'
+  alias: Alert Power Outage
+  description: ''
+  trigger:
+  - entity_id: light.study_bookshelf_lamp
+    from: 'on'
+    platform: state
+    to: unavailable
+  - entity_id: light.study_bookshelf_lamp
+    from: 'off'
+    platform: state
+    to: unavailable
+  condition: []
+  action:
+  - data:
+      message: Possible Power Outage!
+    service: notify.mobile_app_rosstaphone
+- id: '1578634047736'
+  alias: Alert if Garage is open when I leave
+  description: ''
+  trigger:
+  - entity_id: device_tracker.rosstaphone
+    event: leave
+    platform: zone
+    zone: zone.home
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_garage_door
+    state: 'on'
+  action:
+  - data:
+      message: The garage door is open!
+    service: notify.mobile_app_rosstaphone
+- id: '1578634407098'
+  alias: Alert if Garage is open at bedtime
+  description: ''
+  trigger:
+  - at: '22:00:00'
+    platform: time
+  condition:
+  - condition: state
+    entity_id: binary_sensor.wyzesense_garage_door
+    state: 'on'
+  action:
+  - data:
+      message: The garage door is open!
     service: notify.mobile_app_rosstaphone

@@ -15,6 +15,11 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+# InfluxDB
+influxdb:
+  username: homeassistant
+  password: !secret influxdb_password
+
 # Theme
 frontend:
   themes: !include_dir_merge_named themes
@@ -44,13 +49,24 @@ august:
   username: !secret august_username
   password: !secret august_password
 
+# Wyze API
+wyzeapi:
+  username: !secret wyze_username
+  password: !secret wyze_password
+
+# Wyze Sense
+binary_sensor:
+  - platform: wyzesense
+    device: auto
+
 # Ring Doorbell
-ring:
-  username: !secret ring_username
-  password: !secret ring_password
-  
-camera:
-  - platform: ring
+#ring:
+#  username: !secret ring_username
+#  password: !secret ring_password
+
+#camera:
+  # Ring Doorbell
+#  - platform: ring
   
 # Speedtest
 speedtestdotnet:
@@ -61,9 +77,9 @@ speedtestdotnet:
     - ping
     - download
     - upload
-fastdotcom:
-  scan_interval:
-    minutes: 60
+#fastdotcom:
+#  scan_interval:
+#    minutes: 60
 
 # Sensors
 sensor:
@@ -87,13 +103,13 @@ sensor:
     value_template: "{{ value | multiply(0.001) | round(1) }}"
     
   # Ring Doorbell
-  - platform: ring
-    monitored_conditions: [
-        battery,
-        wifi_signal_category, 
-        wifi_signal_strength,
-        last_activity
-      ]
+#  - platform: ring
+#    monitored_conditions: [
+#        battery,
+#        wifi_signal_category, 
+#        wifi_signal_strength,
+#        last_activity
+#      ]
       
   # BadNest
   - platform: badnest
@@ -106,36 +122,36 @@ sensor:
       - date_time
       - time_date
       
-  - platform: template
-    sensors:
-      # Display relative time since last activity
-      ring_front_door_last_activity_relative:
-        friendly_name: "Front Door Last Activity"
-        entity_id: sensor.time
-        value_template: >
-          {%- set entity_id = 'sensor.ring_front_door_last_activity' %}
-          {%- set domain, object_id = entity_id.split('.') %}
-          {%- set state_object = states[domain][object_id] %}
-          {%- if state_object is defined and state_object.attributes.created_at is defined %}
-            {%- set t = as_timestamp(state_object.attributes.created_at) %}
-            {%- set n = now().timestamp() %}
-            {%- set d = n-t %}
-            {%- set midnight_today = as_timestamp(strptime(now().date() | string, "%Y-%m-%d")) %}
-            {%- set midnight_yesterday = midnight_today - 86400 %}
-            {%- set midnight_week_ago = midnight_today - 604800 %}
-            {%- if d < 60 %}
-              Less then a min ago
-            {%- elif d < 3600 %}
-              {{ (d // 60) | int }} min ago
-            {%- elif d < n-midnight_today %}
-              Today at {{ t | timestamp_custom('%I:%M %p') }}
-            {%- elif d < n-midnight_yesterday %}
-              Yesterday at {{ t | timestamp_custom('%I:%M %p') }}
-            {%- elif d < n-midnight_week_ago %}
-              {{ t | timestamp_custom('%A at %I:%M %p') }}
-            {%- else %}
-              {{ t | timestamp_custom('%m/%d at %I:%M %p') }}
-            {%- endif %}
-          {% else %}
-            unknown
-          {% endif %}
+#  - platform: template
+#    sensors:
+#      # Display relative time since last activity
+#      ring_front_door_last_activity_relative:
+#        friendly_name: "Front Door Last Activity"
+#        entity_id: sensor.time
+#        value_template: >
+#          {%- set entity_id = 'sensor.ring_front_door_last_activity' %}
+#          {%- set domain, object_id = entity_id.split('.') %}
+#          {%- set state_object = states[domain][object_id] %}
+#          {%- if state_object is defined and state_object.attributes.created_at is defined %}
+#            {%- set t = as_timestamp(state_object.attributes.created_at) %}
+#            {%- set n = now().timestamp() %}
+#            {%- set d = n-t %}
+#            {%- set midnight_today = as_timestamp(strptime(now().date() | string, "%Y-%m-%d")) %}
+#            {%- set midnight_yesterday = midnight_today - 86400 %}
+#            {%- set midnight_week_ago = midnight_today - 604800 %}
+#            {%- if d < 60 %}
+#              Less then a min ago
+#            {%- elif d < 3600 %}
+#              {{ (d // 60) | int }} min ago
+#            {%- elif d < n-midnight_today %}
+#              Today at {{ t | timestamp_custom('%I:%M %p') }}
+#            {%- elif d < n-midnight_yesterday %}
+#              Yesterday at {{ t | timestamp_custom('%I:%M %p') }}
+#            {%- elif d < n-midnight_week_ago %}
+#              {{ t | timestamp_custom('%A at %I:%M %p') }}
+#            {%- else %}
+#              {{ t | timestamp_custom('%m/%d at %I:%M %p') }}
+#            {%- endif %}
+#          {% else %}
+#            unknown
+#          {% endif %}
